@@ -67,9 +67,11 @@ silvana --help
 ```
 
 ```
-Usage: zkCloudWorker [options] [command]
+Silvana zkProver CLI tool v0.1.0 (c) Silvana 2025 www.silvana.one
 
-zkCloudWorker CLI tool
+Usage: Silvana [options] [command]
+
+Silvana zkProver CLI tool
 
 Options:
   -V, --version                output the version number
@@ -78,24 +80,16 @@ Options:
   -r, --repo <repo>            repo name
   -d, --developer <developer>  developer name
   -m, --manager <pm>           package manager: yarn | npm
+  -b, --build <build>          build script
   -j, --jwt <jwt>              JWT token
   -h, --help                   display help for command
 
 Commands:
   deploy [options]             deploy the repo to the cloud
+  verify [options]             verify the contract of the repo
+  watch                        watch the job events for the repo
   config                       save default configuration
   help [command]               display help for command
-```
-
-```
-Usage: zkCloudWorker deploy [options]
-
-deploy the repo to the cloud
-
-Options:
-  -p, --protect               protect the deployment from changes
-  -e, --exclude [folders...]  exclude files and folders from deployment
-  -h, --help                  display help for command
 ```
 
 ## Development
