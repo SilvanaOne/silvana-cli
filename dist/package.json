@@ -1,0 +1,53 @@
+{
+    "name": "silvana-cli",
+    "description": "Silvana zkProver CLI tool",
+    "keywords": [
+        "Silvana",
+        "backend",
+        "cloud",
+        "proof",
+        "mina",
+        "zkapp",
+        "zk",
+        "blockchain",
+        "web3",
+        "zero knowledge"
+    ],
+    "version": "0.1.0",
+    "author": "DFST",
+    "license": "Apache-2.0",
+    "homepage": "https://docs.silvana.one",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/silvanaone/silvana-cli.git"
+    },
+    "bugs": {
+        "url": "https://github.com/silvanaone/silvana-cli/issues"
+    },
+    "bin": {
+        "silvana": "./dist/src/cli.js",
+        "silvana-cli": "./dist/src/cli.js"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "scripts": {
+        "cli": "ts-node src/cli.ts",
+        "build": "rm -rf dist && tsc",
+        "login": "yarn npm login",
+        "release": "yarn compile && yarn npm publish --access public"
+    },
+    "devDependencies": {
+        "@types/archiver": "^6.0.3",
+        "@types/node": "^22.13.17",
+        "typescript": "^5.8.2"
+    },
+    "dependencies": {
+        "archiver": "^7.0.1",
+        "axios": "^1.8.4",
+        "chalk": "^4.1.2",
+        "commander": "^13.1.0",
+        "nats": "^2.29.3"
+    },
+    "packageManager": "yarn@4.8.1"
+}
