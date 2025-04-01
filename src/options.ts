@@ -42,7 +42,7 @@ export async function options(): Promise<{
     console.error(`Developer name is not provided`);
     process.exit(1);
   }
-  const build = program.opts().build ?? packageJSON.scripts?.["build:agent"];
+  const build = packageJSON.scripts?.["build:agent"];
   if (build && typeof build !== "string") {
     console.error(`Build script build:agent should be a string`);
     process.exit(1);

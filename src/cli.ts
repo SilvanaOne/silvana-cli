@@ -17,13 +17,13 @@ program
   .option("-r, --repo <repo>", "repo name")
   .option("-d, --developer <developer>", "developer name")
   .option("-m, --manager <pm>", "package manager: yarn | npm")
-  .option("-b, --build <build>", "build script")
   .option("-j, --jwt <jwt>", "JWT token");
 
 program
   .command("deploy")
   .description("deploy the repo to the cloud")
   .option("-p, --protect", "protect the deployment from changes")
+  .option("-b, --build <build>", "build script")
   .option(
     "-e, --exclude [names...]",
     "exclude files and folders from deployment"

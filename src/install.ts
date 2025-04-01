@@ -12,6 +12,7 @@ export async function install(params: {
   protect: boolean;
   packageManager: string;
   verify?: boolean;
+  build?: string;
 }) {
   const {
     JWT,
@@ -22,6 +23,7 @@ export async function install(params: {
     packageManager,
     protect,
     verify,
+    build,
   } = params;
 
   const command = verify === true ? "verify" : "deploy";
@@ -31,7 +33,11 @@ export async function install(params: {
     developer,
     repo,
     task: command,
-    args: JSON.stringify({ packageManager, version, size, protect }, null, 2),
+    args: JSON.stringify(
+      { packageManager, version, size, protect, build },
+      null,
+      2
+    ),
     metadata: `${command} ${repo} v. ${version} by ${developer} using ${packageManager} package manager`,
     mode: "async",
     JWT,

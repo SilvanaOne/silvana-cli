@@ -9,7 +9,7 @@ const sleep_1 = require("./sleep");
 const debug_1 = require("./debug");
 const chalk_1 = __importDefault(require("chalk"));
 async function install(params) {
-    const { JWT, repo, developer, version, size, packageManager, protect, verify, } = params;
+    const { JWT, repo, developer, version, size, packageManager, protect, verify, build, } = params;
     const command = verify === true ? "verify" : "deploy";
     const task = verify === true ? "verification" : "deployment";
     let answer = await (0, api_1.zkCloudWorkerRequest)({
@@ -17,7 +17,7 @@ async function install(params) {
         developer,
         repo,
         task: command,
-        args: JSON.stringify({ packageManager, version, size, protect }, null, 2),
+        args: JSON.stringify({ packageManager, version, size, protect, build }, null, 2),
         metadata: `${command} ${repo} v. ${version} by ${developer} using ${packageManager} package manager`,
         mode: "async",
         JWT,

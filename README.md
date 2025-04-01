@@ -67,7 +67,7 @@ silvana --help
 ```
 
 ```
-Silvana zkProver CLI tool v0.1.0 (c) Silvana 2025 www.silvana.one
+Silvana zkProver CLI tool v0.1.1 (c) Silvana 2025 www.silvana.one
 
 Usage: Silvana [options] [command]
 
@@ -80,7 +80,6 @@ Options:
   -r, --repo <repo>            repo name
   -d, --developer <developer>  developer name
   -m, --manager <pm>           package manager: yarn | npm
-  -b, --build <build>          build script
   -j, --jwt <jwt>              JWT token
   -h, --help                   display help for command
 

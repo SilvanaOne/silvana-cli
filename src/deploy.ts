@@ -12,6 +12,7 @@ const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export async function deploy(params: {
   protect?: boolean;
+  build?: string;
   exclude?: string[];
 }) {
   const { protect, exclude } = params;
@@ -22,6 +23,7 @@ export async function deploy(params: {
     repo,
     version,
     packageManager,
+    build: params.build ?? build,
     ...params,
   });
 
@@ -76,5 +78,6 @@ export async function deploy(params: {
     size,
     packageManager,
     protect: protect ?? false,
+    build: params.build ?? build,
   });
 }

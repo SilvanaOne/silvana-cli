@@ -22,6 +22,7 @@ async function deploy(params) {
         repo,
         version,
         packageManager,
+        build: params.build ?? build,
         ...params,
     });
     if (JWT === undefined) {
@@ -68,5 +69,6 @@ async function deploy(params) {
         size,
         packageManager,
         protect: protect ?? false,
+        build: params.build ?? build,
     });
 }
