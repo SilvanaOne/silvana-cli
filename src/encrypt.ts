@@ -1,4 +1,21 @@
-import crypto from "crypto";
+import * as crypto from "crypto";
+
+interface EncryptionInput {
+  text: string;
+  publicKey: string;
+}
+
+interface DecryptionInput {
+  encryptedData: string;
+  privateKey: string;
+}
+
+interface EncryptedData {
+  encryptedContent: string; // Base64 encoded AES-encrypted content
+  authTag: string; // Base64 encoded authentication tag
+  encryptedKey: string; // Base64 encoded RSA-encrypted AES key
+  iv: string; // Base64 encoded initialization vector
+}
 
 /**
  * Generates a new RSA key pair
@@ -32,55 +49,112 @@ export function generateKeyPair(): { privateKey: string; publicKey: string } {
 }
 
 /**
- * Encrypts a string using a public key
- * @param text The string to encrypt
- * @param publicKey The public key in PEM format
- * @returns The encrypted data as a base64 encoded string
+ * Encrypts text using a hybrid RSA-AES scheme
+ * Uses AES-256-GCM for content encryption and RSA for key encryption
  */
-export function encryptWithPublicKey(params: {
-  text: string;
-  publicKey: string;
-}): string {
-  const { text, publicKey } = params;
-  const buffer = Buffer.from(text, "utf8");
+export function encryptWithPublicKey({
+  text,
+  publicKey,
+}: EncryptionInput): string {
+  // Generate a random AES-256 key and IV
+  const aesKey = crypto.randomBytes(32); // 256 bits
+  const iv = crypto.randomBytes(16); // 128 bits
 
-  // Reconstruct the PEM format by adding the header and footer
+  // Create PEM formatted public key
   const pemPublicKey = `-----BEGIN PUBLIC KEY-----\n${publicKey}\n-----END PUBLIC KEY-----`;
 
-  const encrypted = crypto.publicEncrypt(
+  // Encrypt the AES key with RSA
+  const encryptedKey = crypto.publicEncrypt(
     {
       key: pemPublicKey,
       padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
     },
-    buffer
+    aesKey
   );
 
-  return encrypted.toString("base64");
+  // Encrypt the actual content with AES-256-GCM
+  const cipher = crypto.createCipheriv("aes-256-gcm", aesKey, iv);
+  let encryptedContent = cipher.update(text, "utf8", "base64");
+  encryptedContent += cipher.final("base64");
+  const authTag = cipher.getAuthTag();
+
+  // Combine all the encrypted data
+  const encryptedData: EncryptedData = {
+    encryptedContent: encryptedContent,
+    authTag: authTag.toString("base64"),
+    encryptedKey: encryptedKey.toString("base64"),
+    iv: iv.toString("base64"),
+  };
+
+  // Return JSON string of encrypted data
+  return JSON.stringify(encryptedData);
 }
 
 /**
- * Decrypts a string using a private key
- * @param encryptedText The encrypted string in base64 format
- * @param privateKey The private key in PEM format
- * @returns The decrypted string
+ * Decrypts text that was encrypted using encryptWithPublicKey
+ * Requires the corresponding private key to the public key used for encryption
  */
-export function decryptWithPrivateKey(params: {
-  encryptedText: string;
-  privateKey: string;
-}): string {
-  const { encryptedText, privateKey } = params;
-  const buffer = Buffer.from(encryptedText, "base64");
+export function decryptWithPrivateKey({
+  encryptedData,
+  privateKey,
+}: DecryptionInput): string {
+  try {
+    // Parse the encrypted data
+    const parsedData: EncryptedData = JSON.parse(encryptedData);
 
-  // Reconstruct the PEM format by adding the header and footer
-  const pemPrivateKey = `-----BEGIN PRIVATE KEY-----\n${privateKey}\n-----END PRIVATE KEY-----`;
+    // Create PEM formatted private key
+    const pemPrivateKey = `-----BEGIN PRIVATE KEY-----\n${privateKey}\n-----END PRIVATE KEY-----`;
 
-  const decrypted = crypto.privateDecrypt(
-    {
-      key: pemPrivateKey,
-      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-    },
-    buffer
-  );
+    // Decrypt the AES key using RSA
+    const aesKey = crypto.privateDecrypt(
+      {
+        key: pemPrivateKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      },
+      Buffer.from(parsedData.encryptedKey, "base64")
+    );
 
-  return decrypted.toString("utf8");
+    // Decrypt the content using AES-256-GCM
+    const decipher = crypto.createDecipheriv(
+      "aes-256-gcm",
+      aesKey,
+      Buffer.from(parsedData.iv, "base64")
+    );
+
+    decipher.setAuthTag(Buffer.from(parsedData.authTag, "base64"));
+
+    let decrypted = decipher.update(
+      parsedData.encryptedContent,
+      "base64",
+      "utf8"
+    );
+    decrypted += decipher.final("utf8");
+
+    return decrypted;
+  } catch (error) {
+    throw new Error(
+      `Decryption failed: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
+/**
+ * Validates that a string is a valid PEM formatted key
+ */
+export function isValidPEMKey(
+  key: string,
+  type: "public" | "private"
+): boolean {
+  try {
+    const header = type === "public" ? "PUBLIC" : "PRIVATE";
+    const pemKey = `-----BEGIN ${header} KEY-----\n${key}\n-----END ${header} KEY-----`;
+
+    // Attempt to create a key object - this will throw if invalid
+    crypto.createPublicKey(pemKey);
+    return true;
+  } catch {
+    return false;
+  }
 }

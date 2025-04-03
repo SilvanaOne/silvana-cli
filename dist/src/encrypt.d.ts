@@ -1,3 +1,11 @@
+interface EncryptionInput {
+    text: string;
+    publicKey: string;
+}
+interface DecryptionInput {
+    encryptedData: string;
+    privateKey: string;
+}
 /**
  * Generates a new RSA key pair
  * @returns An object containing the private and public keys in PEM format
@@ -7,22 +15,17 @@ export declare function generateKeyPair(): {
     publicKey: string;
 };
 /**
- * Encrypts a string using a public key
- * @param text The string to encrypt
- * @param publicKey The public key in PEM format
- * @returns The encrypted data as a base64 encoded string
+ * Encrypts text using a hybrid RSA-AES scheme
+ * Uses AES-256-GCM for content encryption and RSA for key encryption
  */
-export declare function encryptWithPublicKey(params: {
-    text: string;
-    publicKey: string;
-}): string;
+export declare function encryptWithPublicKey({ text, publicKey, }: EncryptionInput): string;
 /**
- * Decrypts a string using a private key
- * @param encryptedText The encrypted string in base64 format
- * @param privateKey The private key in PEM format
- * @returns The decrypted string
+ * Decrypts text that was encrypted using encryptWithPublicKey
+ * Requires the corresponding private key to the public key used for encryption
  */
-export declare function decryptWithPrivateKey(params: {
-    encryptedText: string;
-    privateKey: string;
-}): string;
+export declare function decryptWithPrivateKey({ encryptedData, privateKey, }: DecryptionInput): string;
+/**
+ * Validates that a string is a valid PEM formatted key
+ */
+export declare function isValidPEMKey(key: string, type: "public" | "private"): boolean;
+export {};

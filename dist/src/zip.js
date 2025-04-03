@@ -30,14 +30,23 @@ async function zip(repo, exclude) {
             output.on("error", (err) => reject(err));
         });
         archive.pipe(output);
+        const excludeList = await (0, exclude_1.getExcludeList)(sourceDir);
         archive.glob("**/*", {
             cwd: sourceDir,
-            ignore: [
-                ...(await (0, exclude_1.getExcludeList)(sourceDir)),
-                ...exclude,
-                ...exclude.map((e) => e + "/**"),
-            ],
-            dot: true,
+            ignore: [...exclude, ...excludeList]
+                .map((pattern) => {
+                // Remove any existing /** suffix
+                pattern = pattern.replace(/\/\*\*$/, "");
+                // Remove double slashes
+                pattern = pattern.replace(/\/\//g, "/");
+                // If pattern doesn't end with /** or *, add /**
+                if (!pattern.endsWith("/**") && !pattern.endsWith("*")) {
+                    pattern = pattern + "/**";
+                }
+                return pattern;
+            })
+                .filter((pattern) => !pattern.startsWith("!")), // Remove negation patterns
+            dot: false,
         });
         await new Promise((resolve, reject) => {
             output.on("close", () => resolve());

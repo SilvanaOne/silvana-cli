@@ -1,6 +1,8 @@
 {
   "name": "silvana-cli",
   "description": "Silvana zkProver CLI tool",
+  "version": "0.1.4",
+  "author": "DFST",
   "keywords": [
     "Silvana",
     "backend",
@@ -13,8 +15,7 @@
     "web3",
     "zero knowledge"
   ],
-  "version": "0.1.2",
-  "author": "DFST",
+
   "license": "Apache-2.0",
   "homepage": "https://docs.silvana.one",
   "repository": {

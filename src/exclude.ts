@@ -119,5 +119,6 @@ export async function getExcludeList(sourceDir: string): Promise<string[]> {
   } catch (error: any) {
     console.error("Error processing .gitignore files:", error.message);
   }
-  return [...exclude, ...gitignoreList];
+  // Return unique patterns, removing duplicates
+  return Array.from(new Set([...exclude, ...gitignoreList]));
 }
