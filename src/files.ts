@@ -5,7 +5,7 @@ import { program } from "./cli";
 export function folder(): string {
   let rootFolder = program.opts().folder ?? "./";
   if (rootFolder.endsWith("/") === false) rootFolder += "/";
-  return rootFolder + ".zkcloudworker/";
+  return rootFolder + ".silvana/";
 }
 
 export function rootFolder(): string {

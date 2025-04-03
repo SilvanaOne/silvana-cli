@@ -22,7 +22,7 @@ function folder() {
     let rootFolder = cli_1.program.opts().folder ?? "./";
     if (rootFolder.endsWith("/") === false)
         rootFolder += "/";
-    return rootFolder + ".zkcloudworker/";
+    return rootFolder + ".silvana/";
 }
 function rootFolder() {
     let rootFolder = cli_1.program.opts().folder ?? "./";

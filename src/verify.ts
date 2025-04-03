@@ -31,11 +31,12 @@ export async function verify(params: {
 
   console.log("Creating zip file...");
   await createDirectories();
-  const zipFileName = await zip(repo, exclude ?? []);
-  if (!zipFileName) {
+  const zipResult = await zip(repo, exclude ?? []);
+  if (!zipResult) {
     console.error(chalk.red("Error creating zip file"));
     return;
   }
+  const { zipFileName, env } = zipResult;
   if (debug()) console.log("Zip file created:", zipFileName);
 
   const stat = await fs.stat(zipFileName);

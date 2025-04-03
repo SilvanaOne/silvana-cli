@@ -1,7 +1,7 @@
 import axios from "axios";
 import chalk from "chalk";
 
-export async function zkCloudWorkerRequest(params: {
+export async function silvanaRequest(params: {
   command: string;
   task?: string;
   transactions?: string[];
@@ -51,7 +51,7 @@ export async function zkCloudWorkerRequest(params: {
     return response.data;
   } catch (error: any) {
     console.error(
-      chalk.red("Error while sending request to zkCloudWorker:"),
+      chalk.red("Error while sending request to Silvana zkProver:"),
       error?.message ?? error?.data ?? error
     );
     process.exit(1);

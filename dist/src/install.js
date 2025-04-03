@@ -9,15 +9,15 @@ const sleep_1 = require("./sleep");
 const debug_1 = require("./debug");
 const chalk_1 = __importDefault(require("chalk"));
 async function install(params) {
-    const { JWT, repo, developer, version, size, packageManager, protect, verify, build, } = params;
+    const { JWT, repo, developer, version, size, packageManager, protect, verify, build, env, } = params;
     const command = verify === true ? "verify" : "deploy";
     const task = verify === true ? "verification" : "deployment";
-    let answer = await (0, api_1.zkCloudWorkerRequest)({
+    let answer = await (0, api_1.silvanaRequest)({
         command,
         developer,
         repo,
         task: command,
-        args: JSON.stringify({ packageManager, version, size, protect, build }, null, 2),
+        args: JSON.stringify({ packageManager, version, size, protect, build, env }, null, 2),
         metadata: `${command} ${repo} v. ${version} by ${developer} using ${packageManager} package manager`,
         mode: "async",
         JWT,
@@ -45,7 +45,7 @@ async function install(params) {
     while ((result === undefined && answer.jobStatus !== "failed") ||
         isAllLogsFetchedFlag === false) {
         await (0, sleep_1.sleep)(5000);
-        answer = await (0, api_1.zkCloudWorkerRequest)({
+        answer = await (0, api_1.silvanaRequest)({
             command: "jobResult",
             jobId,
             includeLogs: printLogs,

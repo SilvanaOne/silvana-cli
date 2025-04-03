@@ -14,8 +14,9 @@ export async function deploy(params: {
   protect?: boolean;
   build?: string;
   exclude?: string[];
+  dry?: boolean;
 }) {
-  const { protect, exclude } = params;
+  const { protect, exclude, dry = false } = params;
   const { repo, developer, version, JWT, packageManager, build } =
     await options();
   console.log(`Deploying the repo to the cloud...`, {
@@ -36,11 +37,12 @@ export async function deploy(params: {
 
   console.log("Creating zip file...");
   await createDirectories();
-  const zipFileName = await zip(repo, exclude ?? []);
-  if (!zipFileName) {
+  const zipResult = await zip(repo, exclude ?? []);
+  if (!zipResult) {
     console.error(chalk.red("Error creating zip file"));
     return;
   }
+  const { zipFileName, env } = zipResult;
   if (debug()) console.log("Zip file created:", zipFileName);
 
   const stat = await fs.stat(zipFileName);
@@ -55,7 +57,11 @@ export async function deploy(params: {
     );
     return;
   }
-  console.log("Uploading zip file to zkCloudWorker's cloud storage...");
+  if (dry) {
+    console.log("Dry run completed. No changes were made.");
+    return;
+  }
+  console.log("Uploading zip file to Silvana zkProver cloud storage...");
   const data = await loadBinary(zipFileName);
   if (!data) {
     console.error(chalk.red("Error reading zip file"));
@@ -79,5 +85,6 @@ export async function deploy(params: {
     packageManager,
     protect: protect ?? false,
     build: params.build ?? build,
+    env,
   });
 }

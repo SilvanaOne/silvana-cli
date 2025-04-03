@@ -1,4 +1,4 @@
-import { zkCloudWorkerRequest } from "./api";
+import { silvanaRequest } from "./api";
 import { sleep } from "./sleep";
 import { debug } from "./debug";
 import chalk from "chalk";
@@ -13,6 +13,7 @@ export async function install(params: {
   packageManager: string;
   verify?: boolean;
   build?: string;
+  env?: string;
 }) {
   const {
     JWT,
@@ -24,17 +25,18 @@ export async function install(params: {
     protect,
     verify,
     build,
+    env,
   } = params;
 
   const command = verify === true ? "verify" : "deploy";
   const task = verify === true ? "verification" : "deployment";
-  let answer = await zkCloudWorkerRequest({
+  let answer = await silvanaRequest({
     command,
     developer,
     repo,
     task: command,
     args: JSON.stringify(
-      { packageManager, version, size, protect, build },
+      { packageManager, version, size, protect, build, env },
       null,
       2
     ),
@@ -68,7 +70,7 @@ export async function install(params: {
     isAllLogsFetchedFlag === false
   ) {
     await sleep(5000);
-    answer = await zkCloudWorkerRequest({
+    answer = await silvanaRequest({
       command: "jobResult",
       jobId,
       includeLogs: printLogs,

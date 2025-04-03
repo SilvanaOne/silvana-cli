@@ -23,6 +23,7 @@ exports.program
     .command("deploy")
     .description("deploy the repo to the cloud")
     .option("-p, --protect", "protect the deployment from changes")
+    .option("-d, --dry", "dry run the deployment to create a zip file")
     .option("-b, --build <build>", "build script")
     .option("-e, --exclude [names...]", "exclude files and folders from deployment")
     .action(async (options) => {

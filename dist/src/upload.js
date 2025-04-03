@@ -13,7 +13,7 @@ async function upload(params) {
     try {
         if ((0, debug_1.debug)())
             console.log("upload", { developer, repo, mimeType });
-        let answer = await (0, api_1.zkCloudWorkerRequest)({
+        let answer = await (0, api_1.silvanaRequest)({
             command: "presignedUrl",
             developer,
             repo,

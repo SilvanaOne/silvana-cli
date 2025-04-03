@@ -1,4 +1,4 @@
-export declare function zkCloudWorkerRequest(params: {
+export declare function silvanaRequest(params: {
     command: string;
     task?: string;
     transactions?: string[];

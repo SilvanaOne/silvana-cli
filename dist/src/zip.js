@@ -9,6 +9,9 @@ const archiver_1 = __importDefault(require("archiver"));
 const files_1 = require("./files");
 const debug_1 = require("./debug");
 const chalk_1 = __importDefault(require("chalk"));
+const exclude_1 = require("./exclude");
+const encrypt_1 = require("./encrypt");
+const publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmB+DYQ7I+K5wxHyyDfS62ftuepFp47bHMCyvbW6zRQ5FrS0ylPgzirfNqOn3o3L0Cw4ydCzOI2H+6PJI1h/XO0TGpwbYabHhJKfw7kQyAOBix/eMpg+JMu/rjcuIYzmBs5t97ydkC66+dCAIIFdmmqwTJK2rEs2rIiyCsQ16uxFm30ds8sqkq9Pcd3oCyW0ey4j+68pDqFcbgXmHKVk4Mc1N744b+Ebx1pgSNvxTCzylZf3eXYZhl39NfsanSbTGpN4Q9+vzVKOi2pXLgLDAzVmml66wbrWnutqEEpTrK3eZPcvbCnrGOVXUMpUQ1DM2aaIua/9CQhhV7QbPO0h8YQIDAQAB";
 async function zip(repo, exclude) {
     try {
         const sourceDir = (0, files_1.rootFolder)();
@@ -30,31 +33,7 @@ async function zip(repo, exclude) {
         archive.glob("**/*", {
             cwd: sourceDir,
             ignore: [
-                ".git/**",
-                "node_modules/**",
-                "yarn.lock",
-                ".yarn/**",
-                ".zkcloudworker/**",
-                "dist/**",
-                "test/**",
-                "tests/**",
-                "cache/**",
-                "packages/*/cache/**",
-                "packages/*/node_modules/**",
-                "packages/*/dist/**",
-                "packages/*/.next/**",
-                "packages/*/build/**",
-                "packages/*/data/**",
-                "packages/*/.env",
-                "packages/*/pnp.cjs",
-                "packages/*/.pnp.loader.mjs",
-                "packages/*/.yarn/**",
-                "packages/*/.vscode/**",
-                "packages/*/.DS_Store",
-                "pnp.cjs",
-                ".pnp.loader.mjs",
-                ".vscode/**",
-                ".DS_Store",
+                ...(await (0, exclude_1.getExcludeList)(sourceDir)),
                 ...exclude,
                 ...exclude.map((e) => e + "/**"),
             ],
@@ -66,7 +45,23 @@ async function zip(repo, exclude) {
             archive.finalize();
         });
         await streamFinished;
-        return zipFileName;
+        // Read .env file if it exists
+        let env = undefined;
+        try {
+            const envPath = `${sourceDir}.env`;
+            if (await (0, files_1.isExist)(envPath)) {
+                if ((0, debug_1.debug)())
+                    console.log(`Reading .env file: ${envPath}`);
+                env = await fs_1.promises.readFile(envPath, "utf8");
+            }
+        }
+        catch (error) {
+            console.error(chalk_1.default.yellow(`Warning: Could not read .env file to transfer it to Silvana zkProver environment`), error.message);
+        }
+        return {
+            zipFileName,
+            env: env ? (0, encrypt_1.encryptWithPublicKey)({ text: env, publicKey }) : undefined,
+        };
     }
     catch (e) {
         console.error(chalk_1.default.red(`Error zipping ${repo}`), e);

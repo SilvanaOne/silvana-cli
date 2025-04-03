@@ -8,4 +8,5 @@ export declare function install(params: {
     packageManager: string;
     verify?: boolean;
     build?: string;
+    env?: string;
 }): Promise<void>;

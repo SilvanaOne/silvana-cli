@@ -1,4 +1,4 @@
-import { zkCloudWorkerRequest } from "./api";
+import { silvanaRequest } from "./api";
 import axios from "axios";
 import chalk from "chalk";
 import { debug } from "./debug";
@@ -15,7 +15,7 @@ export async function upload(params: {
   try {
     if (debug()) console.log("upload", { developer, repo, mimeType });
 
-    let answer = await zkCloudWorkerRequest({
+    let answer = await silvanaRequest({
       command: "presignedUrl",
       developer,
       repo,

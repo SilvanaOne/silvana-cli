@@ -15,7 +15,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const MAX_FILE_SIZE_MB = 1;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 async function deploy(params) {
-    const { protect, exclude } = params;
+    const { protect, exclude, dry = false } = params;
     const { repo, developer, version, JWT, packageManager, build } = await (0, options_1.options)();
     console.log(`Deploying the repo to the cloud...`, {
         developer,
@@ -31,11 +31,12 @@ async function deploy(params) {
     }
     console.log("Creating zip file...");
     await (0, files_1.createDirectories)();
-    const zipFileName = await (0, zip_1.zip)(repo, exclude ?? []);
-    if (!zipFileName) {
+    const zipResult = await (0, zip_1.zip)(repo, exclude ?? []);
+    if (!zipResult) {
         console.error(chalk_1.default.red("Error creating zip file"));
         return;
     }
+    const { zipFileName, env } = zipResult;
     if ((0, debug_1.debug)())
         console.log("Zip file created:", zipFileName);
     const stat = await promises_1.default.stat(zipFileName);
@@ -47,7 +48,11 @@ async function deploy(params) {
             ` zip file is too big: ${(stat.size / 1024 / 1024).toFixed(2)} MB, maximum allowed size is ${MAX_FILE_SIZE_MB} MB)`);
         return;
     }
-    console.log("Uploading zip file to zkCloudWorker's cloud storage...");
+    if (dry) {
+        console.log("Dry run completed. No changes were made.");
+        return;
+    }
+    console.log("Uploading zip file to Silvana zkProver cloud storage...");
     const data = await (0, files_1.loadBinary)(zipFileName);
     if (!data) {
         console.error(chalk_1.default.red("Error reading zip file"));
@@ -70,5 +75,6 @@ async function deploy(params) {
         packageManager,
         protect: protect ?? false,
         build: params.build ?? build,
+        env,
     });
 }

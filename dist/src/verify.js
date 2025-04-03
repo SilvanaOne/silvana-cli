@@ -30,11 +30,12 @@ async function verify(params) {
     }
     console.log("Creating zip file...");
     await (0, files_1.createDirectories)();
-    const zipFileName = await (0, zip_1.zip)(repo, exclude ?? []);
-    if (!zipFileName) {
+    const zipResult = await (0, zip_1.zip)(repo, exclude ?? []);
+    if (!zipResult) {
         console.error(chalk_1.default.red("Error creating zip file"));
         return;
     }
+    const { zipFileName, env } = zipResult;
     if ((0, debug_1.debug)())
         console.log("Zip file created:", zipFileName);
     const stat = await promises_1.default.stat(zipFileName);
