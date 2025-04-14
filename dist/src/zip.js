@@ -46,7 +46,7 @@ async function zip(repo, exclude) {
                 return pattern;
             })
                 .filter((pattern) => !pattern.startsWith("!")), // Remove negation patterns
-            dot: false,
+            dot: true,
         });
         await new Promise((resolve, reject) => {
             output.on("close", () => resolve());

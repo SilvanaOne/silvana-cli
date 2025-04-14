@@ -50,7 +50,7 @@ export async function zip(
         })
         .filter((pattern) => !pattern.startsWith("!")), // Remove negation patterns
 
-      dot: false,
+      dot: true,
     });
 
     await new Promise<void>((resolve, reject) => {
