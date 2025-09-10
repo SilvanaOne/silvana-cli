@@ -1,7 +1,7 @@
 {
     "name": "silvana-cli",
     "description": "Silvana zkProver CLI tool",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "author": "DFST",
     "keywords": [
         "Silvana",
@@ -25,7 +25,7 @@
         "url": "https://github.com/silvanaone/silvana-cli/issues"
     },
     "bin": {
-        "silvana": "./dist/src/cli.js",
+        "silvana-cloud": "./dist/src/cli.js",
         "silvana-cli": "./dist/src/cli.js"
     },
     "engines": {
@@ -49,5 +49,5 @@
         "commander": "^13.1.0",
         "nats": "^2.29.3"
     },
-    "packageManager": "yarn@4.8.1"
+    "packageManager": "yarn@4.9.4"
 }
