@@ -11,7 +11,7 @@ npm install -g silvana-cli
 To confirm successful installation:
 
 ```sh
-silvana --version
+silvana-cloud --version
 ```
 
 ### Updating the Silvana zkProver CLI
@@ -25,13 +25,13 @@ npm update -g silvana-cli
 Make sure that you have the author and name fields set correctly in package.json and run
 
 ```sh
-silvana deploy
+silvana-cloud deploy
 ```
 
 or, to see the logs:
 
 ```sh
-silvana deploy -v
+silvana-cloud deploy -v
 ```
 
 You can see now your agent on https://silvascan.io/testnet/agents
